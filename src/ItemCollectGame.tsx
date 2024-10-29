@@ -2,7 +2,6 @@ import {
   Engine,
   Entity,
   EntityUUID,
-  PresentationSystemGroup,
   SimulationSystemGroup,
   UUIDComponent,
   createEntity,
@@ -22,7 +21,6 @@ import {
   defineState,
   dispatchAction,
   getMutableState,
-  getState,
   matches,
   useImmediateEffect,
   useMutableState
@@ -36,13 +34,12 @@ import { RigidBodyComponent } from '@ir-engine/spatial/src/physics/components/Ri
 import { TriggerComponent } from '@ir-engine/spatial/src/physics/components/TriggerComponent'
 import { CollisionGroups } from '@ir-engine/spatial/src/physics/enums/CollisionGroups'
 import { BodyTypes, Shapes } from '@ir-engine/spatial/src/physics/types/PhysicsTypes'
-import { MeshComponent } from '@ir-engine/spatial/src/renderer/components/MeshComponent'
 import { SceneComponent } from '@ir-engine/spatial/src/renderer/components/SceneComponents'
 import { VisibleComponent } from '@ir-engine/spatial/src/renderer/components/VisibleComponent'
 import { SpawnObjectActions } from '@ir-engine/spatial/src/transform/SpawnObjectActions'
-import { getAncestorWithComponents } from '@ir-engine/spatial/src/transform/components/EntityTree'
-import React, { useEffect } from 'react'
-import { Color, MathUtils, MeshStandardMaterial, Quaternion, Vector3 } from 'three'
+import { EntityTreeComponent, getAncestorWithComponents } from '@ir-engine/spatial/src/transform/components/EntityTree'
+import React from 'react'
+import { MathUtils, Quaternion, Vector3 } from 'three'
 
 const ValidItemColors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'brown'] as const
 
@@ -113,21 +110,15 @@ const ItemReactor = (props: { entityUUID: EntityUUID }) => {
     setComponent(entity, VisibleComponent, true)
     setComponent(entity, RigidBodyComponent, { type: BodyTypes.Fixed })
     setComponent(entity, NameComponent, 'item')
-    setComponent(entity, TriggerComponent, {
-      triggers: [{ onEnter: 'onCollectItem', onExit: null, target: '' as EntityUUID }]
-    })
     setCallback(entity, 'onCollectItem', (triggerEntity: Entity, otherEntity: Entity) => {
-      console.log(otherEntity, AvatarComponent.getSelfAvatarEntity())
       if (otherEntity !== AvatarComponent.getSelfAvatarEntity()) return
       dispatchAction(ItemActions.destroy({ entityUUID: props.entityUUID, userID: Engine.instance.userID }))
     })
 
-    /** @todo fix bug where triggers on child entities dont run callbacks */
-    const colliderEntity = entity
-    // const colliderEntity = createEntity()
-    // setComponent(colliderEntity, NameComponent, 'item-collider')
-    // setComponent(colliderEntity, VisibleComponent, true)
-    // setComponent(colliderEntity, EntityTreeComponent, { parentEntity: entity })
+    const colliderEntity = createEntity()
+    setComponent(colliderEntity, NameComponent, 'item-collider')
+    setComponent(colliderEntity, VisibleComponent, true)
+    setComponent(colliderEntity, EntityTreeComponent, { parentEntity: entity })
     setComponent(colliderEntity, TransformComponent, { scale: new Vector3(0.25, 0.25, 0.25) })
     setComponent(colliderEntity, ColliderComponent, {
       shape: Shapes.Sphere,
@@ -136,6 +127,9 @@ const ItemReactor = (props: { entityUUID: EntityUUID }) => {
     })
     setComponent(colliderEntity, PrimitiveGeometryComponent, {
       geometryType: GeometryTypeEnum.SphereGeometry
+    })
+    setComponent(colliderEntity, TriggerComponent, {
+      triggers: [{ onEnter: 'onCollectItem', onExit: null, target: props.entityUUID }]
     })
     /** @todo change this to material definition component */
     // const material = getComponent(colliderEntity, MeshComponent).material as MeshStandardMaterial
