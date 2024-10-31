@@ -147,33 +147,35 @@ const ItemComponent = defineComponent({
 
 const itemQuery = defineQuery([ItemComponent])
 
+const execute = () => {
+  const itemEntities = itemQuery()
+  if (itemEntities.length) return
+
+  const worldNetwork = NetworkState.worldNetwork
+  if (!worldNetwork?.isHosting) return
+
+  const color = ValidItemColors[Math.floor(Math.random() * ValidItemColors.length)]
+
+  /** @todo hack to get a reference to the default scene platform object */
+  const platformEntity = NameComponent.entitiesByName['platform']?.[0]
+  if (!platformEntity) return
+
+  const rootSceneEntity = getAncestorWithComponents(platformEntity, [SceneComponent])
+  const parentUUID = getComponent(rootSceneEntity, UUIDComponent)
+
+  dispatchAction(
+    ItemActions.spawn({
+      parentUUID,
+      entityUUID: UUIDComponent.generateUUID(),
+      color,
+      position: new Vector3(MathUtils.randFloat(-10, 10), 0.5, MathUtils.randFloat(-10, 10)),
+      rotation: new Quaternion().random()
+    })
+  )
+}
+
 const ItemSpawnSystem = defineSystem({
   uuid: 'ir.example.ItemCollectGame.ItemSpawnSystem',
   insert: { with: SimulationSystemGroup },
-  execute: () => {
-    const itemEntities = itemQuery()
-    if (itemEntities.length) return
-
-    const worldNetwork = NetworkState.worldNetwork
-    if (!worldNetwork?.isHosting) return
-
-    const color = ValidItemColors[Math.floor(Math.random() * ValidItemColors.length)]
-
-    /** @todo hack to get a reference to the default scene platform object */
-    const platformEntity = NameComponent.entitiesByName['platform']?.[0]
-    if (!platformEntity) return
-
-    const rootSceneEntity = getAncestorWithComponents(platformEntity, [SceneComponent])
-    const parentUUID = getComponent(rootSceneEntity, UUIDComponent)
-
-    dispatchAction(
-      ItemActions.spawn({
-        parentUUID,
-        entityUUID: UUIDComponent.generateUUID(),
-        color,
-        position: new Vector3(MathUtils.randFloat(-10, 10), 0.5, MathUtils.randFloat(-10, 10)),
-        rotation: new Quaternion().random()
-      })
-    )
-  }
+  execute
 })
