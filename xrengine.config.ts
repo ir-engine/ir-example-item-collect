@@ -28,7 +28,7 @@ import type { ProjectConfigInterface } from '@ir-engine/projects/ProjectConfigIn
 const config: ProjectConfigInterface = {
   onEvent: './projectEventHooks.ts',
   thumbnail: '/static/IR_thumbnail.jpg',
-  worldInjection: () => import('./src/ItemCollectGame'),
+  worldInjection: () => import('./src/ItemCollectGame')
 }
 
 export default config
