@@ -129,7 +129,7 @@ const ItemReactor = (props: { entityUUID: EntityUUID }) => {
       geometryType: GeometryTypeEnum.SphereGeometry
     })
     setComponent(colliderEntity, TriggerComponent, {
-      triggers: [{ onEnter: 'onCollectItem', onExit: null, target: props.entityUUID }]
+      triggers: [{ onEnter: 'onCollectItem', onExit: '', target: props.entityUUID }]
     })
     /** @todo change this to material definition component */
     // const material = getComponent(colliderEntity, MeshComponent).material as MeshStandardMaterial
