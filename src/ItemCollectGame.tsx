@@ -1,6 +1,7 @@
 import {
   Engine,
   Entity,
+  EntityTreeComponent,
   EntityUUID,
   SimulationSystemGroup,
   UUIDComponent,
@@ -8,6 +9,7 @@ import {
   defineComponent,
   defineQuery,
   defineSystem,
+  getAncestorWithComponents,
   getComponent,
   setComponent
 } from '@ir-engine/ecs'
@@ -37,7 +39,6 @@ import { BodyTypes, Shapes } from '@ir-engine/spatial/src/physics/types/PhysicsT
 import { SceneComponent } from '@ir-engine/spatial/src/renderer/components/SceneComponents'
 import { VisibleComponent } from '@ir-engine/spatial/src/renderer/components/VisibleComponent'
 import { SpawnObjectActions } from '@ir-engine/spatial/src/transform/SpawnObjectActions'
-import { EntityTreeComponent, getAncestorWithComponents } from '@ir-engine/spatial/src/transform/components/EntityTree'
 import React from 'react'
 import { MathUtils, Quaternion, Vector3 } from 'three'
 
