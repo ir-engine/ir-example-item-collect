@@ -158,7 +158,7 @@ const execute = () => {
   const color = ValidItemColors[Math.floor(Math.random() * ValidItemColors.length)]
 
   /** @todo hack to get a reference to the default scene platform object */
-  const platformEntity = NameComponent.entitiesByName['platform']?.[0]
+  const platformEntity = NameComponent.getEntitiesByName('platform')?.[0]
   if (!platformEntity) return
 
   const rootSceneEntity = getAncestorWithComponents(platformEntity, [SceneComponent])
